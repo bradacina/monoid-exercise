@@ -27,8 +27,9 @@ indexJ _ Empty = Nothing
 indexJ n _ | n < 0 = Nothing
 indexJ 0 (Single _ a) = Just a
 indexJ _ (Single _ _) = Nothing
-indexJ n (Append m _ _) | n >= (getSize . size $ m) = Nothing
+indexJ 0 (Append _ _ _) = Nothing
 indexJ n (Append m left right) 
+    | n >= (getSize . size $ m) = Nothing
     | n < leftSize = indexJ n left
     | n >= leftSize = indexJ (n - leftSize) right
     where leftSize = getSize . size . tag $ left
