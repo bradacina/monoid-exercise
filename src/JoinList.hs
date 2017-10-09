@@ -1,5 +1,7 @@
 module JoinList where
 
+import Sized
+
 data JoinList m a = 
     Empty
     | Single m a
@@ -19,3 +21,14 @@ tag :: Monoid m => JoinList m a -> m
 tag Empty = mempty
 tag (Single m _) = m
 tag (Append m _ _) = m
+
+indexJ :: (Sized b, Monoid b) => Int -> JoinList b a -> Maybe a
+indexJ _ Empty = Nothing
+indexJ n _ | n < 0 = Nothing
+indexJ 0 (Single _ a) = Just a
+indexJ _ (Single _ _) = Nothing
+indexJ n (Append m _ _) | n >= (getSize . size $ m) = Nothing
+indexJ n (Append m left right) 
+    | n < leftSize = indexJ n left
+    | n >= leftSize = indexJ (n - leftSize) right
+    where leftSize = getSize . size . tag $ left
